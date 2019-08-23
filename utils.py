@@ -1,7 +1,6 @@
 from collections import namedtuple
 
- 
- 
+
 def draw_line(p1, p2):
     dx = p2.x - p1.x
     dy = p2.y - p1.y
@@ -17,9 +16,17 @@ def draw_line(p1, p2):
             x = round((y - b) / a)
             points.append([x, y])
     return points
- 
- 
+
+
 Point = namedtuple('Point', 'x y')
 p2 = Point(100, 100)
 p1 = Point(120, 600)
 print(draw_line(p1, p2))
+
+def rbg_to_hsl():
+
+def hsl_to_rbg():
+    pass
+
+def color_conversion():
+    pass
