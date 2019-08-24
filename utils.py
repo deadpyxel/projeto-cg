@@ -37,52 +37,68 @@ def rbg_to_hls(rbg_values: dict):
     hue = 0.
     saturation = 0.
 
-    if delta != 0.:
-        saturation = delta / (1 - abs(2 * lightness - 1))
+    if c_max != c_min:
+        saturation = delta / (c_max + c_min) if lightness < 0.5 else float(
+            delta / (2.0 - delta))
 
     if c_max == _r:
-        hue = 60 * (((_g - _b) / delta) % 6)
+        hue = 60 * ((_g - _b) / delta)
     elif c_max == _g:
         hue = 60 * (((_b - _r) / delta) + 2.)
     elif c_max == _b:
         hue = 60 * (((_r - _g) / delta) + 4.)
 
+    if hue < 0.:
+        hue += 360.
+
+    hue = hue / 360 * 240
+    saturation *= 240
+    lightness *= 240
     return {'hue': hue, 'lightness': lightness, 'saturation': saturation}
 
 
 def hls_to_rbg(hls_values: dict):
     # https://www.rapidtables.com/convert/color/hsl-to-rgb.html
-    c = (1 - abs(2 * hls_values['lightness'] - 1) * hls_values['saturation'])
-    x = c * (1 - abs((hls_values['hue'] / 60.) % 2 - 1))
-    m = hls_values['lightness'] - c / 2.
 
-    _r, _g, _b = 0, 0, 0
-    if 0. < hls_values['hue'] < 60.:
-        _r, _g, _b = c, x, 0
-    elif 60. <= hls_values['hue'] < 120.:
-        _r, _g, _b = x, c, 0
-    elif 120. <= hls_values['hue'] < 180.:
-        _r, _g, _b = 0, c, x
-    elif 180. <= hls_values['hue'] < 240.:
-        _r, _g, _b = 0, x, c
-    elif 240. <= hls_values['hue'] < 300.:
-        _r, _g, _b = x, 0, c
-    elif 300. <= hls_values['hue'] < 360.:
-        _r, _g, _b = c, 0, x
+    # normalization
+    _h = 360 * hls_values['hue'] / 240
+    _s = hls_values['saturation'] / 240
+    _l = hls_values['lightness'] / 240
 
-    rbg = {
-        'red': (_r + m) * 255,
-        'green': (_g + m) * 255,
-        'blue': (_b + m) * 255
-    }
-    return rbg
+    if _s == 0.:
+        val = 255 / 100
+        return {'red': val, 'green': val, 'blue': val}
+
+    t1 = float(_l * (1. + _s)) if _l < 0.5 else (_l + _s) - (_l * _s)
+    t2 = 2.0 * _l - t1
+
+    _h = _h / 360
+    _rgb = [_h + 1. / 3, _h, _h - 1. / 3]
+
+    for i, ch in enumerate(_rgb):
+        if ch < 0:
+            ch += 1
+        elif ch > 1:
+            ch -= 1
+
+        if 6 * ch < 1:
+            ch = t2 + (t1 - t2) * 6 * ch
+        elif 2 * ch < 1:
+            ch = t1
+        elif 3 * ch < 2:
+            ch = float(t2 + ((t1 - t2) * (2 / 3 - ch) * 6))
+        else:
+            ch = t2
+
+        _rgb[i] = round(ch * RBGMAX)
+    return {'red': _rgb[0], 'green': _rgb[1], 'blue': _rgb[2]}
 
 
 def color_conversion():
     pass
 
 
-test_color = {'red': 0, 'green': 0, 'blue': 255}
+test_color = {'red': 24, 'green': 98, 'blue': 118}
 hls = rbg_to_hls(test_color)
 print(hls)
 print(hls_to_rbg(hls))
