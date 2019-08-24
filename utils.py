@@ -75,7 +75,7 @@ def hls_to_rbg(hls_values: dict):
     _h = _h / 360
     _rgb = [_h + 1. / 3, _h, _h - 1. / 3]
 
-    for ch in _rgb:
+    for i, ch in enumerate(_rgb):
         if ch < 0:
             ch += 1
         elif ch > 1:
@@ -90,9 +90,7 @@ def hls_to_rbg(hls_values: dict):
         else:
             ch = t2
 
-        ch = round(ch * RBGMAX)
-        print(ch)
-    print(_rgb)
+        _rgb[i] = round(ch * RBGMAX)
     return {'red': _rgb[0], 'green': _rgb[1], 'blue': _rgb[2]}
 
 
