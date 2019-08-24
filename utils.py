@@ -69,11 +69,11 @@ def hls_to_rbg(hls_values: dict):
         val = 255 / 100
         return {'red': val, 'green': val, 'blue': val}
 
-    t1 = float(_l * (1. + _s)) if _l < 0.5 else (_l + _s) - (_l + _s)
+    t1 = float(_l * (1. + _s)) if _l < 0.5 else (_l + _s) - (_l * _s)
     t2 = 2.0 * _l - t1
 
     _h = _h / 360
-    _rgb = _r, _g, _b = _h + 1. / 3, _h, _h + 1. / 3
+    _rgb = [_h + 1. / 3, _h, _h - 1. / 3]
 
     for ch in _rgb:
         if ch < 0:
