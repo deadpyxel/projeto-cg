@@ -29,17 +29,11 @@ def rbg_to_hls(rbg_values: dict):
     _g = rbg_values['green'] / RBGMAX
     _b = rbg_values['blue'] / RBGMAX
 
-    # _r = round(_r, 2)
-    # _g = round(_g, 2)
-    # _b = round(_b, 2)
-
     c_max = max(_r, _g, _b)
     c_min = min(_r, _g, _b)
-    print(f'MAX: {c_max} MIN:{c_min}')
     delta = c_max - c_min
 
     lightness = (c_max + c_min) / 2
-    print(f'L: {lightness}')
     hue = 0.
     saturation = 0.
 
